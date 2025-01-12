@@ -49,9 +49,6 @@ To get started with this project, follow the instructions below:
 - Filter and sort movies by genre, rating, and popularity
 - Dark mode support
 
-## License
-
-This project is licensed under the MIT License. See the LICENSE file for more details.
 
 ## Authors
 
