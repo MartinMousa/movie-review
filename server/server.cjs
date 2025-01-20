@@ -1,25 +1,34 @@
-import jsonServer from 'json-server';
-import auth from 'json-server-auth';
-import cors from 'cors';
-import multer from 'multer';
-import path from 'path';
-import fs from 'fs';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+const jsonServer = require('json-server');
+const auth = require('json-server-auth');
+const cors = require('cors');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+// Ensure db.json exists
+const dbPath = path.join(__dirname, 'db.json');
+if (!fs.existsSync(dbPath)) {
+  fs.writeFileSync(dbPath, JSON.stringify({
+    users: [],
+    profiles: [],
+    reviews: [],
+    favorites: [],
+    watchlist: [],
+    ratings: [],
+    comments: []
+  }, null, 2));
+}
 
 const server = jsonServer.create();
-const router = jsonServer.router(path.join(__dirname, 'db.json'));
+const router = jsonServer.router(dbPath);
 const middlewares = jsonServer.defaults({
-  static: 'public'
+  static: path.join(__dirname, '..', 'public')
 });
 
 // Set up multer for file uploads
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    const uploadDir = 'public/uploads';
+    const uploadDir = path.join(__dirname, '..', 'public', 'uploads');
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true });
     }

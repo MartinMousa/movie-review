@@ -1,13 +1,8 @@
-import { spawn } from 'child_process';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const { spawn } = require('child_process');
+const path = require('path');
 
 // Start the backend server
-const backend = spawn('node', ['server/server.js'], {
+const backend = spawn('node', ['server/server.cjs'], {
   stdio: 'inherit',
   shell: true
 });

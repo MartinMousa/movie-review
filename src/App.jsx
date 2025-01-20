@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import { ThemeProvider } from './context/ThemeContext';
 import { MovieProvider } from './context/MovieContext';
 import { AuthProvider } from './context/AuthContext';
@@ -12,6 +13,7 @@ import MovieDetails from './pages/MovieDetails';
 import SearchResults from './pages/SearchResults';
 import Favorites from './pages/Favorites';
 import Watchlist from './pages/Watchlist';
+import Profile from './pages/Profile';
 import { useAuth } from './context/AuthContext';
 
 // Protected Route Component
@@ -34,14 +36,6 @@ function ProtectedRoute({ children }) {
 }
 
 function App() {
-  // Initialize theme based on localStorage or system preference
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-      document.documentElement.classList.add('dark');
-    }
-  }, []);
-
   return (
     <Router>
       <AuthProvider>
@@ -60,7 +54,7 @@ function App() {
                     path="/profile"
                     element={
                       <ProtectedRoute>
-                        <UserProfile />
+                        <Profile />
                       </ProtectedRoute>
                     }
                   />

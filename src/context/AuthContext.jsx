@@ -1,58 +1,64 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext();
-
-const API_URL = 'http://localhost:3001';
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
-    const initializeAuth = async () => {
-      const token = localStorage.getItem('token');
-      const storedUser = localStorage.getItem('user');
-      
-      if (token && storedUser) {
-        const userData = JSON.parse(storedUser);
-        setUser(userData);
-        try {
-          await fetchProfile(userData.id);
-        } catch (err) {
-          console.error('Failed to fetch profile:', err);
-        }
-      }
-      
-      setLoading(false);
-    };
-
-    initializeAuth();
+    // Check if user is logged in
+    const token = localStorage.getItem('token');
+    const userData = localStorage.getItem('user');
+    if (token && userData) {
+      const parsedUser = JSON.parse(userData);
+      setUser(parsedUser);
+      fetchProfile(parsedUser.id);
+    }
+    setLoading(false);
   }, []);
 
   const fetchProfile = async (userId) => {
     try {
-      const response = await fetch(`${API_URL}/profile/${userId}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-      
-      if (response.ok) {
-        const profileData = await response.json();
-        setProfile(profileData);
+      const response = await fetch(`http://localhost:3001/profiles?userId=${userId}`);
+      const data = await response.json();
+      if (data.length > 0) {
+        setProfile(data[0]);
       }
-    } catch (err) {
-      console.error('Error fetching profile:', err);
+    } catch (error) {
+      console.error('Error fetching profile:', error);
     }
   };
 
-  const register = async (email, password, username) => {
+  const login = async (email, password) => {
     try {
-      const response = await fetch(`${API_URL}/register`, {
+      const response = await fetch('http://localhost:3001/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Login failed');
+      }
+
+      const data = await response.json();
+      localStorage.setItem('token', data.accessToken);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      setUser(data.user);
+      await fetchProfile(data.user.id);
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const register = async (email, password) => {
+    try {
+      const response = await fetch('http://localhost:3001/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -66,54 +72,34 @@ export function AuthProvider({ children }) {
 
       const data = await response.json();
       
-      // Create profile
-      await fetch(`${API_URL}/profiles`, {
+      // Create initial profile
+      const profileResponse = await fetch('http://localhost:3001/profiles', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${data.accessToken}`
+          'Authorization': `Bearer ${data.accessToken}`,
         },
         body: JSON.stringify({
           userId: data.user.id,
-          username,
-          createdAt: new Date().toISOString()
+          username: email.split('@')[0],
+          bio: '',
+          avatar: '/uploads/default-avatar.png',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
         }),
       });
 
-      localStorage.setItem('token', data.accessToken);
-      localStorage.setItem('user', JSON.stringify(data.user));
-      setUser(data.user);
-      await fetchProfile(data.user.id);
-      navigate('/');
-    } catch (err) {
-      setError(err.message);
-      throw err;
-    }
-  };
-
-  const login = async (email, password) => {
-    try {
-      const response = await fetch(`${API_URL}/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Invalid credentials');
+      if (!profileResponse.ok) {
+        throw new Error('Failed to create profile');
       }
 
-      const data = await response.json();
       localStorage.setItem('token', data.accessToken);
       localStorage.setItem('user', JSON.stringify(data.user));
       setUser(data.user);
       await fetchProfile(data.user.id);
-      navigate('/');
-    } catch (err) {
-      setError(err.message);
-      throw err;
+      return data;
+    } catch (error) {
+      throw error;
     }
   };
 
@@ -122,23 +108,30 @@ export function AuthProvider({ children }) {
     localStorage.removeItem('user');
     setUser(null);
     setProfile(null);
-    navigate('/login');
   };
 
-  const updateProfile = async (profileData, avatar) => {
+  const updateProfile = async (profileData) => {
     try {
+      const token = localStorage.getItem('token');
       const formData = new FormData();
-      if (avatar) {
-        formData.append('avatar', avatar);
-      }
-      formData.append('profile', JSON.stringify(profileData));
+      
+      // Add profile data
+      formData.append('profile', JSON.stringify({
+        username: profileData.username,
+        bio: profileData.bio,
+      }));
 
-      const response = await fetch(`${API_URL}/profile/${user.id}`, {
+      // Add avatar if provided
+      if (profileData.avatar) {
+        formData.append('avatar', profileData.avatar);
+      }
+
+      const response = await fetch(`http://localhost:3001/profile/${user.id}`, {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${token}`,
         },
-        body: formData
+        body: formData,
       });
 
       if (!response.ok) {
@@ -148,26 +141,13 @@ export function AuthProvider({ children }) {
       const updatedProfile = await response.json();
       setProfile(updatedProfile);
       return updatedProfile;
-    } catch (err) {
-      setError(err.message);
-      throw err;
+    } catch (error) {
+      throw error;
     }
   };
 
   return (
-    <AuthContext.Provider 
-      value={{ 
-        user,
-        profile,
-        loading,
-        error,
-        register,
-        login,
-        logout,
-        updateProfile,
-        setError
-      }}
-    >
+    <AuthContext.Provider value={{ user, profile, loading, login, register, logout, updateProfile }}>
       {children}
     </AuthContext.Provider>
   );

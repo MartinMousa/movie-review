@@ -1,6 +1,22 @@
 {
-  "users": [],
-  "profiles": [],
+  "users": [
+    {
+      "email": "test@test.com",
+      "password": "$2a$10$hyDw5/7nQHRqTNYeBd357u9vG1naqpMHzd86RdZX/Ee.7WGyc7oRK",
+      "id": 1
+    }
+  ],
+  "profiles": [
+    {
+      "userId": 1,
+      "username": "test",
+      "bio": "",
+      "avatar": "/uploads/default-avatar.png",
+      "createdAt": "2025-01-20T23:11:40.523Z",
+      "updatedAt": "2025-01-20T23:11:40.523Z",
+      "id": 1
+    }
+  ],
   "reviews": [],
   "favorites": [],
   "watchlist": [],
