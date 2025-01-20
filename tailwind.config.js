@@ -9,24 +9,18 @@ export default {
     extend: {
       colors: {
         primary: {
-          light: '#ffffff',
-          dark: '#1F2937',
+          light: '#EEEEEE',
+          dark: '#222831'
         },
         secondary: {
-          light: '#f3f4f6',
-          dark: '#374151',
+          light: '#00ADB5',
+          dark: '#393E46'
         },
-        accent: {
-          light: '#3B82F6',
-          dark: '#60A5FA',
-        },
+        accent: '#00ADB5',
         text: {
-          light: '#1F2937',
-          dark: '#F9FAFB',
+          light: '#222831',
+          dark: '#EEEEEE'
         }
-      },
-      animation: {
-        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
       }
     },
   },

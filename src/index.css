@@ -3,15 +3,38 @@
 @tailwind utilities;
 
 :root {
+  --dark-blue: #222831;
+  --light-blue: #393E46;
+  --cyan: #00ADB5;
+  --light-gray: #EEEEEE;
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 }
 
-body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
+@layer base {
+  body {
+    @apply bg-primary-light dark:bg-primary-dark text-text-light dark:text-text-dark;
+    margin: 0;
+    min-width: 320px;
+    min-height: 100vh;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply px-4 py-2 rounded-lg font-medium transition-all duration-200
+           hover:shadow-lg active:scale-95;
+  }
+
+  .btn-primary {
+    @apply bg-accent text-white hover:bg-opacity-90;
+  }
+
+  .card {
+    @apply bg-white dark:bg-secondary-dark rounded-lg shadow-md
+           transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
+  }
 }
 
 /* Dark mode styles */
@@ -78,6 +101,35 @@ body {
 
 .animate-bounce {
   animation: bounce 1s infinite;
+}
+
+/* New animations */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pulse-soft {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 2s ease-in-out infinite;
 }
 
 /* Scrollbar styling */

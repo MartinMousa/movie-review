@@ -7,14 +7,18 @@ export default function ThemeToggle() {
   return (
     <button
       onClick={toggleTheme}
-      className="p-2 rounded-lg hover:bg-secondary transition-colors"
+      className="relative p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700
+                transition-all duration-300 active:scale-95"
       aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
     >
-      {isDark ? (
-        <SunIcon className="h-6 w-6 text-yellow-400" />
-      ) : (
-        <MoonIcon className="h-6 w-6 text-gray-600" />
-      )}
+      <div className="relative w-6 h-6">
+        <div className={`absolute inset-0 transform transition-transform duration-500 ${isDark ? 'rotate-0' : '-rotate-90 scale-0'}`}>
+          <MoonIcon className="w-6 h-6 text-gray-600 dark:text-yellow-300" />
+        </div>
+        <div className={`absolute inset-0 transform transition-transform duration-500 ${isDark ? 'rotate-90 scale-0' : 'rotate-0'}`}>
+          <SunIcon className="w-6 h-6 text-yellow-500" />
+        </div>
+      </div>
     </button>
   );
 }

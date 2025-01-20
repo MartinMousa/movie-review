@@ -11,9 +11,10 @@ import { MovieProvider } from './context/MovieContext'
 import { ThemeProvider } from './context/ThemeContext'
 
 function App() {
-  // Initialize dark mode based on system preference
+  // Initialize theme based on localStorage or system preference
   useEffect(() => {
-    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
       document.documentElement.classList.add('dark');
     }
   }, []);
@@ -22,7 +23,7 @@ function App() {
     <ThemeProvider>
       <MovieProvider>
         <Router>
-          <div className="min-h-screen bg-primary-light dark:bg-primary-dark text-text-light dark:text-text-dark flex flex-col transition-colors">
+          <div className="min-h-screen bg-primary-light dark:bg-primary-dark text-text-light dark:text-text-dark transition-colors">
             <Header />
             <main className="flex-grow container mx-auto px-4 py-8">
               <Routes>
