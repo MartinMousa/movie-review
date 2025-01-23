@@ -107,12 +107,20 @@ export function MovieProvider({ children }) {
       
       if (page === 1) {
         setSearchResults(formattedMovies);
+        // Reset hasMore based on first page results
+        setHasMore(response.total_pages > 1);
       } else {
         setSearchResults(prev => [...prev, ...formattedMovies]);
       }
       
-      setHasMore(response.page < response.total_pages);
+      // Update hasMore based on current results
+      setHasMore(response.page < response.total_pages && formattedMovies.length > 0);
       setCurrentPage(response.page);
+
+      // If no results found, set appropriate message
+      if (formattedMovies.length === 0 && page === 1) {
+        setError('No movies found matching your search.');
+      }
     } catch (err) {
       setError('Error searching movies. Please try again.');
       console.error('Error searching movies:', err);
@@ -121,9 +129,15 @@ export function MovieProvider({ children }) {
     }
   };
 
-  const loadMoreSearchResults = () => {
+  const loadMoreSearchResults = async () => {
     if (!loading && hasMore && searchQuery) {
-      searchMovies(searchQuery, currentPage + 1);
+      try {
+        const nextPage = currentPage + 1;
+        await searchMovies(searchQuery, nextPage);
+      } catch (err) {
+        setHasMore(false);
+        console.error('Error loading more results:', err);
+      }
     }
   };
 
