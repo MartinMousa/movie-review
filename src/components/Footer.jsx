@@ -5,7 +5,7 @@ export default function Footer() {
     <footer className="bg-secondary mt-auto">
       <div className="container mx-auto px-4 py-6">
         <div className="flex flex-col md:flex-row justify-between items-center">
-          <p className="text-gray-400">{new Date().getFullYear()} Made by Abdelrahman and Martin with ❤️</p>
+          <p className="text-gray-400">{new Date().getFullYear()} &copy; Filmix. Made with &hearts; by Abdelrahman and Martin</p>
           <div className="flex items-center gap-6 mt-4 md:mt-0">
             <a 
               href="https://x.com" 

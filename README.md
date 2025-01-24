@@ -1,6 +1,6 @@
-# Movie Review App
+# Filmix
 
-This project is a modern movie review application built with React and powered by TMDB API. It allows users to discover movies, manage their watchlist, write reviews, and interact with a community of movie enthusiasts.
+This project is a modern movie discovery platform built with React and powered by TMDB API. It allows users to discover movies, manage their watchlist, write reviews, and interact with a community of movie enthusiasts.
 
 ## 🚀 Technologies Used
 
